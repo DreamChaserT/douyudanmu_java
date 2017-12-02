@@ -1,6 +1,8 @@
 import java.io.*;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
+import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -9,10 +11,33 @@ import java.util.logging.Logger;
 
 import static java.lang.Thread.sleep;
 
-public class testMain {
+public class Main {
+    private static String handleMessage(String src) {
+        //处理为Map
+        Map map = Serialization.Serialization(src);
+        Object type = map.get("type");
+        Object nn = map.get("nn");
+        Object txt = map.get("txt");
+        if (null != type && type.equals("chatmsg")) {
+            if (null != nn && null != txt) {
+                return nn + ":" + txt;
+            }
+        }
+        return null;
+    }
+
+    private static String getRoomId() {
+        System.out.print("请输入房间Id:");
+        Scanner sc = new Scanner(System.in);
+        String roomId = sc.next();
+        return roomId;
+    }
+
     public static void main(String[] args) {
         final short type = 689;
-        final String roomid = "156277";
+        String roomid = getRoomId();
+        System.out.println("roomId:"+roomid);
+        System.out.println("读取中，请稍等\n==========================================");
         final TcpClient tcpClient = TcpClient.getInstance();
         tcpClient.startClient("openbarrage.douyutv.com", 8601);
         MessageBean mb1 = new MessageBean(type, "type@=loginreq/roomid@=" + roomid + "/");
@@ -32,16 +57,17 @@ public class testMain {
                         final MessageBean finalMsgb = msgb;
                         new Thread(new Runnable() {
                             public void run() {
-                                SoftReference content= finalMsgb.getContentString();
+                                SoftReference content = finalMsgb.getContentString();
                                 if (null == content) {
                                     //内容为null
                                     return;
                                 }
-                                Object content_item= content.get();
-                                if(null!=content_item){
-                            if (!"".equals(content) && ((String)content_item).substring(0, 13).equals("type@=chatmsg"))
-//                                    Logger.getLogger("数据接收").log(Level.INFO,content);
-                                    System.out.println(Thread.currentThread().getId() + ":" + content_item);
+                                Object content_item = content.get();
+                                if (null != content_item) {
+                                    String msg = handleMessage((String) content_item);
+                                    if (null != msg)
+//                                        System.out.println(Thread.currentThread().getId() + ":" + msg);
+                                        System.out.println(msg);
                                 }
                             }
                         }).start();
@@ -68,13 +94,13 @@ public class testMain {
         //定时心跳包
         new Thread(new Runnable() {
             public void run() {
-                while(true){
-                    tcpClient.send(new MessageBean(type,"type@=keeplive/tick@="+System.currentTimeMillis()/1000+"/"));
+                while (true) {
+                    tcpClient.send(new MessageBean(type, "type@=keeplive/tick@=" + System.currentTimeMillis() / 1000 + "/"));
                     try {
                         sleep(30000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
-                        Logger.getLogger("心跳包出错").log(Level.INFO,"发送出错");
+                        Logger.getLogger("心跳包出错").log(Level.INFO, "发送出错");
                     }
 
                 }

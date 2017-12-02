@@ -57,7 +57,7 @@ public class TcpClient {
         try {
             out.write(messageBean.getBytes());
             out.flush();
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "客户端发送");
+//            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "客户端发送");
         } catch (IOException e) {
             e.printStackTrace();
             Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "数据发送出错");
