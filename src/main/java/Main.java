@@ -14,13 +14,14 @@ import static java.lang.Thread.sleep;
 public class Main {
     private static String handleMessage(String src) {
         //处理为Map
-        Map map = Serialization.Serialization(src);
-        Object type = map.get("type");
-        Object nn = map.get("nn");
-        Object txt = map.get("txt");
+        Map<String,String> map = Serialization.Serialization(src);
+        String type = map.get("type");
+        String nn = map.get("nn");
+        String txt = map.get("txt");
         if (null != type && type.equals("chatmsg")) {
             if (null != nn && null != txt) {
-                return nn + ":" + txt;
+                String res=nn + ":" + txt;
+                return res;
             }
         }
         return null;
@@ -57,14 +58,14 @@ public class Main {
                         final MessageBean finalMsgb = msgb;
                         new Thread(new Runnable() {
                             public void run() {
-                                SoftReference content = finalMsgb.getContentString();
+                                SoftReference<String> content = finalMsgb.getContentString();
                                 if (null == content) {
                                     //内容为null
                                     return;
                                 }
-                                Object content_item = content.get();
+                                String content_item = content.get();
                                 if (null != content_item) {
-                                    String msg = handleMessage((String) content_item);
+                                    String msg = handleMessage(content_item);
                                     if (null != msg)
 //                                        System.out.println(Thread.currentThread().getId() + ":" + msg);
                                         System.out.println(msg);
