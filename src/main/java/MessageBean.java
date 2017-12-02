@@ -1,4 +1,6 @@
 import java.io.InputStream;
+import java.lang.ref.SoftReference;
+import java.lang.ref.WeakReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,20 +44,26 @@ public class MessageBean {
             System.arraycopy(head, 0, length, 0, 4);
             System.arraycopy(head, 4, length2, 0, 4);
             System.arraycopy(head, 8, type, 0, 2);
-            if(Convert.byteToint(length, Convert.StoreType.little)!=Convert.byteToint(length2, Convert.StoreType.little)) {
+            int _length1 = Convert.byteToint(length, Convert.StoreType.little);
+            int _length2 = Convert.byteToint(length2, Convert.StoreType.little);
+
+            if (_length1 != _length2||_length1>1000||_length2>1000) {
 //                Logger.getLogger("数据包丢弃").log(Level.WARNING, "数据包丢弃");
+
                 return;
             }
+//            System.out.println("++++++++++++++++++++length1:" + _length1+"++++++++++++++++++++length2:" + _length2);
             encrypt = head[10];
             left = head[11];
             length_t = Convert.byteToint(length, Convert.StoreType.little) + 4;
+//            System.out.println("++++++++++++++++++++length:" + length_t);
+
             //读取内容信息
             int content_length = length_t - 12;
-            if(content_length<1)
+            if (content_length < 1)
                 return;
             content = new byte[content_length];
             in.read(content);
-//            System.arraycopy(head, 12, content, 0, content_length);
         } catch (Exception e) {
             e.printStackTrace();
             return;
@@ -74,11 +82,22 @@ public class MessageBean {
         return res;
     }
 
-    public String getContentString() {
-        String str="\0";
-        if(null!=content) {
-            str = new String(content);
+    public SoftReference<String> getContentString() {
+
+        if (null != content) {
+            try {
+                SoftReference<String> reference = new SoftReference<String>(new String(content));
+                return reference;
+            } catch (Exception e) {
+                e.printStackTrace();
+                Logger.getLogger(this.toString()).log(Level.WARNING, "=====================================" + this.length_t);
+            }
+
         }
-        return str.substring(0, str.length() - 1);
+        return null;
+
     }
+
+
+
 }
