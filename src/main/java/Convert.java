@@ -1,7 +1,25 @@
+/**
+ * @title 格式转换
+ * @author Error
+ */
 public class Convert {
+    /**
+     * 存储格式enum
+     */
     enum StoreType{
-        little,big
+        //小端格式
+        little,
+        //大端格式
+        big
     }
+
+    /**
+     * Int tobyte byte [ ].
+     *
+     * @param src       the src
+     * @param storeType the store type
+     * @return the byte [ ]
+     */
     public static byte[] intTobyte(int src,StoreType storeType){
         byte[] res=new byte[4];
         switch(storeType){
@@ -21,6 +39,13 @@ public class Convert {
         return res;
     }
 
+    /**
+     * Byte toint int.
+     *
+     * @param src       the src
+     * @param storeType the store type
+     * @return the int
+     */
     public static int byteToint(byte[] src,StoreType storeType){
         int res=0;
         switch(storeType){
@@ -41,6 +66,13 @@ public class Convert {
     }
 
 
+    /**
+     * Short tobyte byte [ ].
+     *
+     * @param src       the src
+     * @param storeType the store type
+     * @return the byte [ ]
+     */
     public static byte[] shortTobyte(short src,StoreType storeType){
         byte[] res=new byte[2];
         switch(storeType){
@@ -56,6 +88,13 @@ public class Convert {
         return res;
     }
 
+    /**
+     * Byte toshort short.
+     *
+     * @param src       the src
+     * @param storeType the store type
+     * @return the short
+     */
     public static short byteToshort(byte[] src,StoreType storeType){
         short res=0;
         switch(storeType){
@@ -71,11 +110,16 @@ public class Convert {
         return res;
     }
 
+    /**
+     * Byte tochar char [ ].
+     *
+     * @param src the src
+     * @return the char [ ]
+     */
     public static char[] byteTochar(byte[] src){
         int length=src.length;
         if(length>1000)
             return new String("").toCharArray();
-//        System.out.println("++++++++++++++++++++length:"+length);
         char[] res=new char[length];
         for(int i=0;i<length;++i){
             res[i]= (char) src[i];

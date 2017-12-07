@@ -1,8 +1,18 @@
 import java.util.HashMap;
 import java.util.Map;
 
-//数据序列化
+
+/**
+ * @title 斗鱼弹幕数据序列化工具
+ * @author Error
+ */
 public class Serialization {
+    /**
+     * @title 将数据反序列化(只解析一层数据)
+     *
+     * @param src the src
+     * @return the map
+     */
     public static Map Serialization(String src) {
         HashMap<String, String> res = new HashMap<String, String>();
         //根据/切分数据
@@ -21,6 +31,7 @@ public class Serialization {
         return res;
     }
 
+    //将转义字符转换为真实字符
     private static String handleExpression(String src) {
         String res1 = src.replaceAll("@A", "@");
         res1.replaceAll("@S", "/");

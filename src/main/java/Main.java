@@ -76,6 +76,7 @@ public class Main {
 
                     } catch (Exception e) {
                         e.printStackTrace();
+                        break;
                     }
 
                 }
@@ -83,12 +84,7 @@ public class Main {
         };
         ExecutorService es = Executors.newFixedThreadPool(5);
         es.execute(tasks);
-//        es.execute(tasks);
-//        es.execute(tasks);
-//        es.execute(tasks);
-//        es.execute(tasks);
 
-//
         tcpClient.send(mb1);//登录
         tcpClient.send(mb2);//入组
 
@@ -108,20 +104,5 @@ public class Main {
             }
         }).start();
 
-        //手动触发gc
-//        new Thread(new Runnable() {
-//            public void run() {
-//                while(true){
-//                    try {
-//                        System.gc();
-//                        sleep(1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                        Logger.getLogger("gc").log(Level.INFO,"出错");
-//                    }
-//
-//                }
-//            }
-//        }).start();
     }
 }

@@ -4,19 +4,31 @@ import java.lang.ref.WeakReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+/**
+ * @title 斗鱼自定义协议bean
+ */
 public class MessageBean {
+    //数据包真实长度
     private int length_t;
-    private byte[] length;
+
+    //协议数据部分
+    private byte[] length;//不计算此长度
     private byte[] length2;
     private byte[] type;
     private byte encrypt;
     private byte left;
     private byte[] content;
 
-    //根据参数生成数据Bean
+    /**
+     * 根据参数生成数据Bean
+     *
+     * @param type    the type
+     * @param content the content
+     */
     public MessageBean(short type, String content) {
         content += '\0';
-        length_t = 12 + content.length();
+        this.length_t = 12 + content.length();
         //长度只计算一次
         this.length = Convert.intTobyte(length_t - 4, Convert.StoreType.little);
         this.length2 = this.length;
@@ -26,7 +38,11 @@ public class MessageBean {
         this.content = content.getBytes();
     }
 
-    //根据输入流生成数据Bean
+    /**
+     * 根据数据流生成bean
+     *
+     * @param in the in
+     */
     public MessageBean(InputStream in) {
         if (null == in)
             return;
@@ -48,15 +64,11 @@ public class MessageBean {
             int _length2 = Convert.byteToint(length2, Convert.StoreType.little);
 
             if (_length1 != _length2||_length1>1000||_length2>1000) {
-//                Logger.getLogger("数据包丢弃").log(Level.WARNING, "数据包丢弃");
-
                 return;
             }
-//            System.out.println("++++++++++++++++++++length1:" + _length1+"++++++++++++++++++++length2:" + _length2);
             encrypt = head[10];
             left = head[11];
-            length_t = Convert.byteToint(length, Convert.StoreType.little) + 4;
-//            System.out.println("++++++++++++++++++++length:" + length_t);
+            this.length_t = Convert.byteToint(length, Convert.StoreType.little) + 4;
 
             //读取内容信息
             int content_length = length_t - 12;
@@ -66,11 +78,16 @@ public class MessageBean {
             in.read(content);
         } catch (Exception e) {
             e.printStackTrace();
-            return;
+            throw new IllegalStateException();
         }
     }
 
 
+    /**
+     * 将bean转换为byte[]格式
+     *
+     * @return the byte [ ]
+     */
     public byte[] getBytes() {
         byte[] res = new byte[length_t];
         System.arraycopy(length, 0, res, 0, 4);
@@ -82,6 +99,11 @@ public class MessageBean {
         return res;
     }
 
+    /**
+     * 获取content内容
+     *
+     * @return the content string
+     */
     public SoftReference<String> getContentString() {
 
         if (null != content) {
