@@ -3,22 +3,21 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * tcp连接工具包
+ */
 public class TcpClient {
-    private static TcpClient ourInstance = new TcpClient();
     private Socket tcpSocket = null;
     private OutputStream out = null;//客户端->服务器
     private InputStream in = null;//服务器->客户端
 
-    public static TcpClient getInstance() {
-        return ourInstance;
+    TcpClient(String host, int port) {
+        //初始化启动数据连接
+        startClient(host, port);
     }
 
-    private TcpClient() {
-
-    }
-
-    //启动数据连接，只能启动一次
-    public synchronized boolean startClient(String host, int port) {
+    //启动数据连接
+    private synchronized boolean startClient(String host, int port) {
         try {
             if (null == tcpSocket) {
                 tcpSocket = new Socket(host, port);
@@ -40,7 +39,7 @@ public class TcpClient {
                     out.close();
                     out = null;
                 }
-            }catch (IOException ioe2){
+            } catch (IOException ioe2) {
                 ioe2.printStackTrace();
             }
             return false;
